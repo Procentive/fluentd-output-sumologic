@@ -9,7 +9,7 @@ class SumologicConnection
 
   def initialize(endpoint, verify_ssl, ssl_version, ssl_cipher, connect_timeout, proxy_uri, disable_cookies)
     @endpoint = endpoint
-    create_http_client(verify_ssl, ssl_version, connect_timeout, proxy_uri, disable_cookies)
+    create_http_client(verify_ssl, ssl_version, ssl_cipher, connect_timeout, proxy_uri, disable_cookies)
   end
 
   def publish(raw_data, source_host=nil, source_category=nil, source_name=nil, data_type, metric_data_type, collected_fields)
