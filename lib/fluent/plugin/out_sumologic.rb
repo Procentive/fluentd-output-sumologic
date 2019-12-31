@@ -7,7 +7,7 @@ class SumologicConnection
 
   attr_reader :http
 
-  def initialize(endpoint, verify_ssl, ssl_version, connect_timeout, proxy_uri, disable_cookies)
+  def initialize(endpoint, verify_ssl, ssl_version, ssl_cipher, connect_timeout, proxy_uri, disable_cookies)
     @endpoint = endpoint
     create_http_client(verify_ssl, ssl_version, connect_timeout, proxy_uri, disable_cookies)
   end
@@ -48,10 +48,11 @@ class SumologicConnection
     verify_ssl==true ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
   end
 
-  def create_http_client(verify_ssl, ssl_version, connect_timeout, proxy_uri, disable_cookies)
+  def create_http_client(verify_ssl, ssl_version, ssl_cipher, connect_timeout, proxy_uri, disable_cookies)
     @http                        = HTTPClient.new(proxy_uri)
     @http.ssl_config.verify_mode = ssl_options(verify_ssl)
     @http.ssl_config.ssl_version = ssl_version
+    @http.ssl_config.ssl_cipher  = ssl_cipher
     @http.connect_timeout        = connect_timeout
     if disable_cookies
       @http.cookie_manager       = nil
@@ -82,6 +83,7 @@ class Fluent::Plugin::Sumologic < Fluent::Plugin::Output
   config_param :source_host, :string, :default => nil
   config_param :verify_ssl, :bool, :default => true
   config_param :ssl_version, :string, :default => 'TLSv1_2'
+  config_param :ssl_cipher, :string, :default => 'DEFAULT'
   config_param :delimiter, :string, :default => "."
   config_param :open_timeout, :integer, :default => 60
   config_param :add_timestamp, :bool, :default => true
@@ -131,7 +133,7 @@ class Fluent::Plugin::Sumologic < Fluent::Plugin::Output
       end
     end
 
-    @sumo_conn = SumologicConnection.new(conf['endpoint'], conf['verify_ssl'], conf['ssl_version'], conf['open_timeout'].to_i, conf['proxy_uri'], conf['disable_cookies'])
+    @sumo_conn = SumologicConnection.new(conf['endpoint'], conf['verify_ssl'], conf['ssl_version'], conf['ssl_cipher'], conf['open_timeout'].to_i, conf['proxy_uri'], conf['disable_cookies'])
     super
   end
 
