@@ -52,7 +52,7 @@ class SumologicConnection
     @http                        = HTTPClient.new(proxy_uri)
     @http.ssl_config.verify_mode = ssl_options(verify_ssl)
     @http.ssl_config.ssl_version = ssl_version
-    @http.ssl_config.ssl_cipher  = ssl_cipher
+    @http.ssl_config.ciphers     = ssl_cipher
     @http.connect_timeout        = connect_timeout
     if disable_cookies
       @http.cookie_manager       = nil
